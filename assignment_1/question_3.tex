@@ -1,0 +1,22 @@
+\section{What is rendering? What are different rendering techniques?}
+
+Rendering is the process of generating an image from a 2D or 3D model using a
+computer program. The model defines the viewpoint, shapes, colours of objects,
+lighting properties of the scene, properties of object textures like specular or
+diffuse refletivity, etc. A renderer generates a digital image from this data.
+
+Some different rendering techniques are
+\begin{description}
+  \item [Ray tracing]traces the path of light through pixels in an image plane
+    and simulates the effects when the light ray interacts with objects in the
+    scene. This can produce a highly realistic image of a scene, however, the
+    algorithm is complex and rendering takes a long time for largeer scenes.
+  \item [Radiosity] simulates how illuminated surfaces act as indirect light
+    sources which in turn illuminate other surfaces. This produces a realistic
+    shading of scenes with ambient lighting, suitable for indoor scenes.
+  \item [Rasterisation] updates pixels affected by each scene primitive (like
+    triangles and polygons) to obtain a final image.
+  \item [Ray casting] is a primitive form of ray tracing which considers only
+    primary rays, ignoring the way light is affected by secondary reflections or
+    interactions.
+\end{description}
