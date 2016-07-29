@@ -1,0 +1,7 @@
+tags
+*.pdf
+*.pdf_tex
+*.log
+*.dvi
+*.out
+*.aux
