@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg2"
+   viewBox="0 0 394.31284 361.61455"
+   height="361.61453"
+   width="394.31281"
+   inkscape:version="0.91 r"
+   sodipodi:docname="vector.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="640"
+     inkscape:window-height="480"
+     id="namedview13"
+     showgrid="false"
+     inkscape:zoom="2.0683308"
+     inkscape:cx="198.12337"
+     inkscape:cy="177.74274"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs4">
+    <linearGradient
+       x1="322"
+       x2="-29.700001"
+       gradientTransform="translate(474.85542,-2.761446)"
+       y1="179"
+       gradientUnits="userSpaceOnUse"
+       y2="445"
+       id="b-3">
+      <stop
+         id="stop7-5"
+         offset="0"
+         stop-color="#333" />
+      <stop
+         id="stop9-6"
+         offset="1"
+         stop-opacity="0"
+         stop-color="#fff" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(-221.81723,-275.05008)"
+     id="layer1">
+    <g
+       transform="translate(-271.72535,257.36608)"
+       id="g4242">
+      <path
+         style="fill:url(#b-3)"
+         d="m 877.85542,246.29855 c -12,115 -135,122 -368,123 -4.3,-1.07 -7.32,-7.33 -6,-41 76,-37 151,-124 167,-236 93,123 201,40.9 207,154 z"
+         id="path16-2" />
+      <path
+         id="VectorLarge"
+         d="m 661,294 0,-62.5 23.4,0.184 c 0.678,20.8 7.32,36.3 19.9,46.4 12.7,9.93 32.1,14.9 57.9,14.9 24.1,0 42.5,-4.29 55.1,-12.9 12.7,-8.71 19.1,-21.3 19.1,-37.9 0,-13.2 -3.86,-23.4 -11.6,-30.5 -7.59,-7.11 -23.7,-14 -48.4,-20.8 l -40.1,-10.9 c -29,-7.97 -49.5,-17.9 -61.4,-29.8 -11.8,-11.9 -17.7,-28.2 -17.7,-48.9 0,-23.3 9.15,-41.4 27.4,-54.3 18.3,-12.9 44,-19.3 77.1,-19.3 14.1,0 29.6,1.41 46.4,4.23 16.8,2.7 34.7,6.68 53.7,12 l 0,58.5 -23,0 c -2.3,-19.4 -9.49,-33.4 -21.6,-41.9 -11.9,-8.71 -30.2,-13.1 -54.7,-13.1 -21.4,0 -37.7,3.99 -49,12 -11.1,7.85 -16.7,19.3 -16.7,34.4 0,13.1 4.2,23.4 12.6,30.9 8.4,7.48 26.2,14.9 53.5,22.3 l 37.6,10.1 c 27.5,7.48 47.1,17 58.8,28.7 11.8,11.5 17.7,27 17.7,46.5 0,26.6 -9.42,46.7 -28.3,60.2 -18.88,13.5 -46.9,20.2 -84.2,20.2 -16.7,0 -33.7,-1.53 -51,-4.6 -18,-3 -35,-7 -53,-13 z"
+         style="fill:#000000" />
+      <use
+         height="100%"
+         width="100%"
+         y="0"
+         x="0"
+         xlink:href="#VectorLarge"
+         transform="matrix(0.17,0,0,0.17,392,313)"
+         id="use46" />
+    </g>
+  </g>
+</svg>
