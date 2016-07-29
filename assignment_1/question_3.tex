@@ -1,5 +1,7 @@
+\documentclass[a4paper,14pt,english,crop=false]{standalone}
+\usepackage{assignment}
+\begin{document}
 \section{What is rendering? What are different rendering techniques?}
-
 Rendering is the process of generating an image from a 2D or 3D model using a
 computer program. The model defines the viewpoint, shapes, colours of objects,
 lighting properties of the scene, properties of object textures like specular or
@@ -15,8 +17,11 @@ Some different rendering techniques are
     sources which in turn illuminate other surfaces. This produces a realistic
     shading of scenes with ambient lighting, suitable for indoor scenes.
   \item [Rasterisation] updates pixels affected by each scene primitive (like
-    triangles and polygons) to obtain a final image.
+    triangles and polygons) to obtain a final image. It is much faster than
+    pixel-by-pixel rendering as time is not wasted on \emph{empty} parts of the
+    image.
   \item [Ray casting] is a primitive form of ray tracing which considers only
     primary rays, ignoring the way light is affected by secondary reflections or
     interactions.
 \end{description}
+\end{document}

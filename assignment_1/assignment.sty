@@ -4,6 +4,8 @@
 % Package imports
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Use Computer Modern fonts at all sizes
+% Modular documents
+\usepackage{standalone}
 \RequirePackage{fix-cm}
 % Patches for Latex
 \RequirePackage{fixltx2e}
@@ -38,8 +40,6 @@
 % Graphics
 \usepackage{tikz}
 \usetikzlibrary{shapes, arrows, positioning}
-% Modular documents
-\usepackage{standalone}
 % Hypertext links in PDFs
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
@@ -72,9 +72,14 @@
   tabsize=4
 }
 
+% Include svg images rendered via inkscape
+% Need to suppress the inclusion of subfig which is incompatible with subcaption
+\expandafter\def\csname ver@subfig.sty\endcsname{}
+\usepackage{svg}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Using the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{empty}
 % Section depth to number
 \setcounter{secnumdepth}{3}
 % Section depth to add to TOC
