@@ -5,3 +5,7 @@ tags
 *.dvi
 *.out
 *.aux
+*.synctex.gz
+*.fdb_latexmk
+*.fdb
+*.fls
