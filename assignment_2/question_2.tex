@@ -1,0 +1,18 @@
+\documentclass[a4paper,14pt,english,crop=false]{standalone}
+\usepackage{assignment}
+\begin{document}
+\section{Study all polygon related functions in \texttt{graphics.h} and explain any
+  four.}
+\texttt{libgraph} includes the following polygon related functions
+\begin{description}
+    \item [\texttt{rectangle}] {draws a rectangle outline with the current
+        colour, given the coordinates of the top-left and bottom-right point.}
+    \item [\texttt{bar}] {draws a filled rectangle, similar to the
+        \texttt{rectangle} function.}
+    \item [\texttt{drawpoly}] {draws a polygon outline given a sequence of its
+      vertices.  It takes a list of vertices and uses a line drawing algorithm
+      internally to draw the edges in order.}
+    \item [\texttt{fillpoly}] {draws a filled polygon, similar to the
+        \texttt{drawpoly} function.}
+\end{description}
+\end{document}

@@ -1,0 +1,21 @@
+\documentclass[a4paper,14pt,english,crop=false]{standalone}
+\usepackage{assignment}
+\begin{document}
+\section{What is aliasing and what are antialiasing techniques?}
+Aliasing is a distortion observed due to a lower sampling rate (display
+resolution) of an image. It causes artefacts such as jagged edges of a smooth
+curve or line, loss of detail of an image, or the appearance of regular patterns
+win the rendered image.
+Some antialiasing techinques are:
+\begin{description}
+  \item [Preflitering] {computes a pixel colour based on the overlap of the
+      scene objects with the pixel's area. This causes a blurring effect along
+      line edges and reduces jagged edges which reduces aliasing effect.}
+  \item [Postfiltering or supersampling] {renders an image at a higher
+      resolution, lowpass filters it and the image is then resampled at the
+      required resolutions.  This is computationally expensive as more memory is
+      required for rendering at a higher resolution.}
+  \item [Adaptive supersampling] {is a variant of supersampling which samples at
+      a higher resolution only where the pixel colours change rapidly.}
+\end{description}
+\end{document}
