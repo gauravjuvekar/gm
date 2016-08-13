@@ -6,17 +6,24 @@ Polygons can be rendered by drawing the edges using any line drawing algorithm
 like DDA or Bresenham's algorithm.
 Polygon filling involves colouring a bounded region (polygon) with a given
 colour. There are various algorithms to determine whether a pixel is within or
-outside the region.
+outside the region.\\
+\begin{figure}[h]
+  \centering
+  \includesvg[width=0.5\textwidth,pdf]{scanline}
+  \caption{Scanline fill}
+\end{figure}
 Some polygon filling algorithms are
 \begin{description}
   \item [Scanline fill] {iterates a scanline across the image (horizontal or
       vertical) and colours the pixels of the line between alternating
       intersections with the polygon boundaries.}
-  \item [Flood fill or boundary fill] {starts with a point in the interior of
-      the polygon and colours all neighbouring pixels with the target colour if
-      they are not a part of the boundary. This is repeated till all the pixels
-      in the interior of the region are coloured. There are 4-connected and
+  \item [Flood fill] {starts with a point in the interior of
+      the polygon and colours all neighbouring pixels of the same target colour
+      with a replacement colour. This is repeated till all the pixels in the
+      interior of the region are coloured. There are 4-connected and
       8-connected variants depending on which pixels are considered to be
       neighbours at each step of the algorithm.}
+  \item [Boundary fill] {is very similar to flood fill, but the algorithm stops
+      when a boundary of a given colour is reached.}
 \end{description}
 \end{document}

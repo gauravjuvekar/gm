@@ -29,8 +29,6 @@
 \usepackage{tabulary}
 % Customize captions in floats
 \usepackage{caption}
-% Customize captions for subfigures
-\usepackage{subcaption}
 % Row-span cells
 \usepackage{multirow}
 % Metricate
@@ -78,8 +76,9 @@
 \usepackage{graphicx}
 % Include svg images rendered via inkscape
 % Need to suppress the inclusion of subfig which is incompatible with subcaption
-\expandafter\def\csname ver@subfig.sty\endcsname{}
+% \expandafter\def\csname ver@subfig.sty\endcsname{}
 \usepackage{svg}
+\usepackage{subfig}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Using the packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
