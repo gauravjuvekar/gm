@@ -41,7 +41,6 @@ def bresanham_quad0(start, end):
     algorithm, suitable only for the first quadrant and for lines with
     slopes < 1
     """
-    INCREMENT = 1
     ydiff = end.y - start.y
     assert(ydiff >= 0)
     ydiff_2  = 2 * ydiff
