@@ -88,6 +88,10 @@ def rotate(points, angle, axis):
                      matrix[2][1] * point.y +
                      matrix[2][2] * point.z))
 
+def rotate_faces(faces, angle, axis):
+    return (rotate(face, angle, axis) for face in faces)
+
+
 def intify(points):
     try:
         iter_points = iter(points)
@@ -122,38 +126,38 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((args.window_size, args.window_size))
     surface = pygame.display.get_surface()
 
-    def rt(angle, vector):
-        faces = []
-        face = [Point(*_) for _ in (
-            (0, 0, 0), (0, 100, 0), (0, 100, 100), (0, 0, 100),)]
-        faces.append(face)
-        faces.append(list(translate(face, 100, 0, 0)))
+    cube = []
+    face = [Point(*_) for _ in (
+        (0, 0, 0), (0, 100, 0), (0, 100, 100), (0, 0, 100),)]
+    cube.append(face)
+    cube.append(list(translate(face, 100, 0, 0)))
 
-        face = [Point(*_) for _ in (
-            (0, 0, 0), (100, 0, 0), (100, 100, 0), (0, 100, 0),)]
-        faces.append(face)
-        faces.append(list(translate(face, 0, 0, 100)))
+    face = [Point(*_) for _ in (
+        (0, 0, 0), (100, 0, 0), (100, 100, 0), (0, 100, 0),)]
+    cube.append(face)
+    cube.append(list(translate(face, 0, 0, 100)))
 
-        face = [Point(*_) for _ in (
-            (0, 0, 0), (0, 0, 100), (100, 0, 100), (0, 0, 100),)]
-        faces.append(list(translate(face, 0, 100, 0)))
-        faces = [list(translate(face, -50, -50, -50)) for face in faces]
+    face = [Point(*_) for _ in (
+        (0, 0, 0), (0, 0, 100), (100, 0, 100), (0, 0, 100),)]
+    cube.append(face)
+    cube.append(list(translate(face, 0, 100, 0)))
+    cube = [list(translate(face, -50, -50, -50)) for face in cube]
 
-        faces = [rotate(points,
-                        math.radians(angle),
-                        vector, )
-                 for points in faces]
-        faces = [list(translate(face, 200, 200, 0)) for face in faces]
-        faces = [[(_.x, _.y) for _ in face] for face in faces]
+    def animate(cube, vector, rotation_range):
+        for angle in rotation_range:
+            faces = [[point for point in face] for face in rotate_faces(cube, math.radians(angle), vector)]
+            yield list(faces)
 
-        for face in faces:
-            pygame.draw.polygon(surface, (255, 255, 255), face, 1)
-        pygame.display.update()
     vector = UnitVector(args.VECTOR_X, args.VECTOR_Y, args.VECTOR_Z)
-    for angle in range(360 + 1):
-        rt(angle, vector)
+    for cube in animate(cube, vector, range(361)):
+        cube = [list(translate(face, 200, 200, 0)) for face in cube]
+        projections = [[(_.x, _.y) for _ in face] for face in cube]
+        for polygon in projections:
+            pygame.draw.polygon(surface, (255, 255, 255), polygon, 1)
+        pygame.display.update()
         time.sleep(0.01)
         surface.fill((0,0,0))
+
     # Wait till window quit
     while pygame.event.wait().type != pygame.QUIT:
         pass
