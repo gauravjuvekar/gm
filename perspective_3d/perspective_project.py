@@ -112,6 +112,19 @@ if __name__ == '__main__':
     parser.add_argument("VECTOR_Z",
                         type=int,
                         help="Z dimension of axis of rotation")
+    parser.add_argument("CAM_X",
+                        type=int,
+                        help="X coordinate of camera")
+    parser.add_argument("CAM_Y",
+                        type=int,
+                        help="Y coordinate of camera")
+    parser.add_argument("CAM_Z",
+                        type=int,
+                        help="Z coordinate of camera")
+    parser.add_argument("--screen-z",
+                        type=int,
+                        help="Z coordinate of screen",
+                        default=0)
     parser.add_argument("ANGLE",
                         type=int,
                         help="Angle to rotate in degrees")
@@ -120,6 +133,7 @@ if __name__ == '__main__':
                         default=500,
                         help="Window size in pixels (equal width an height)")
     args = parser.parse_args()
+    cam = Point(args.CAM_X, args.CAM_Y, args.CAM_Z)
 
     # Init display
     pygame.display.init()
@@ -162,8 +176,12 @@ if __name__ == '__main__':
             faces = [[point for point in face] for face in rotate_faces(cube, math.radians(angle), vector)]
             yield list(faces)
 
-    def parallel_project(point):
-        return (point.x, point.y)
+    def parallel_project(point, cam, screen_z):
+        x = cam.x + ((screen_z - cam.z) / (cam.z - point.z)) * (cam.x - point.x)
+        y = cam.y + ((screen_z - cam.z) / (cam.z - point.z)) * (cam.y - point.y)
+        x = int(round(x))
+        y = int(round(y))
+        return (x, y)
 
     vector = UnitVector(args.VECTOR_X, args.VECTOR_Y, args.VECTOR_Z)
     for cube in animate(cube, vector, range(361)):
@@ -171,7 +189,9 @@ if __name__ == '__main__':
             face,
             args.window_size // 2, args.window_size // 2,
             -CUBE_SIDE // 2)) for face in cube]
-        projections = [[parallel_project(point) for point in face] for face in cube]
+        projections = [[parallel_project(point, cam, args.screen_z)
+                        for point in face]
+                       for face in cube]
         for polygon in projections:
             pygame.draw.polygon(surface, (255, 255, 255), polygon, 1)
         pygame.display.update()
