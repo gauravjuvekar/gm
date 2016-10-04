@@ -176,7 +176,7 @@ if __name__ == '__main__':
             faces = [[point for point in face] for face in rotate_faces(cube, math.radians(angle), vector)]
             yield list(faces)
 
-    def parallel_project(point, cam, screen_z):
+    def perspective_project(point, cam, screen_z):
         x = cam.x + ((screen_z - cam.z) / (cam.z - point.z)) * (cam.x - point.x)
         y = cam.y + ((screen_z - cam.z) / (cam.z - point.z)) * (cam.y - point.y)
         x = int(round(x))
@@ -189,7 +189,7 @@ if __name__ == '__main__':
             face,
             args.window_size // 2, args.window_size // 2,
             -CUBE_SIDE // 2)) for face in cube]
-        projections = [[parallel_project(point, cam, args.screen_z)
+        projections = [[perspective_project(point, cam, args.screen_z)
                         for point in face]
                        for face in cube]
         for polygon in projections:
