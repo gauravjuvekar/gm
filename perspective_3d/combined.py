@@ -76,8 +76,8 @@ def rotate(points, angle, axis):
                m * m * (1 - math.cos(angle)) + 1 * math.cos(angle),
                n * m * (1 - math.cos(angle)) - l * math.sin(angle)],
               [l * n * (1 - math.cos(angle)) - m * math.sin(angle),
-               m * n * (1 - math.cos(angle)) + l * math.cos(angle),
-               n * n * (1 - math.cos(angle)) + 1 * math.sin(angle)]]
+               m * n * (1 - math.cos(angle)) + l * math.sin(angle),
+               n * n * (1 - math.cos(angle)) + 1 * math.cos(angle)]]
     for point in iter_points:
         yield Point((matrix[0][0] * point.x +
                      matrix[0][1] * point.y +
