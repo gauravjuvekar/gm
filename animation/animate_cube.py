@@ -7,7 +7,6 @@ import argparse
 import math
 from collections import namedtuple
 import time
-import math
 
 # A simple point class
 Point = namedtuple('Point', ['x', 'y', 'z'])
