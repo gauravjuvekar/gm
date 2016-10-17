@@ -8,6 +8,7 @@ import math
 from collections import namedtuple
 import time
 import math
+import pprint
 
 # A simple point class
 Point = namedtuple('Point', ['x', 'y', 'z'])
@@ -68,15 +69,15 @@ def rotate(points, angle, axis):
     l = axis.x
     m = axis.y
     n = axis.z
-    matrix = [[l*l*(1-math.cos(angle)) + 1*math.cos(angle),
-               m*l*(1-math.cos(angle)) - n*math.sin(angle),
-               n*l*(1-math.cos(angle)) + m*math.sin(angle)],
-              [l*m*(1-math.cos(angle)) + n*math.sin(angle),
-               m*m*(1-math.cos(angle)) + 1*math.cos(angle),
-               n*m*(1-math.cos(angle)) - l*math.sin(angle)],
-              [l*n*(1-math.cos(angle)) - m*math.sin(angle),
-               m*n*(1-math.cos(angle)) + l*math.cos(angle),
-               n*n*(1-math.cos(angle)) + 1*math.sin(angle)]]
+    matrix = [[l * l * (1 - math.cos(angle)) + 1 * math.cos(angle),
+               m * l * (1 - math.cos(angle)) - n * math.sin(angle),
+               n * l * (1 - math.cos(angle)) + m * math.sin(angle)],
+              [l * m * (1 - math.cos(angle)) + n * math.sin(angle),
+               m * m * (1 - math.cos(angle)) + 1 * math.cos(angle),
+               n * m * (1 - math.cos(angle)) - l * math.sin(angle)],
+              [l * n * (1 - math.cos(angle)) - m * math.sin(angle),
+               m * n * (1 - math.cos(angle)) + l * math.cos(angle),
+               n * n * (1 - math.cos(angle)) + 1 * math.sin(angle)]]
     for point in iter_points:
         yield Point((matrix[0][0] * point.x +
                      matrix[0][1] * point.y +
@@ -91,7 +92,6 @@ def rotate(points, angle, axis):
 def rotate_faces(faces, angle, axis):
     return (rotate(face, angle, axis) for face in faces)
 
-
 def intify(points):
     try:
         iter_points = iter(points)
@@ -99,6 +99,89 @@ def intify(points):
         iter_points = iter((points,))
     for point in iter_points:
         yield Point(int(round(point.x)), int(round(point.y)))
+
+def animate(poly_shape, vector, rotation_range):
+    for angle in rotation_range:
+        faces = [[point for point in face] for face in
+                 rotate_faces(poly_shape, math.radians(angle), vector)]
+        yield list(faces)
+
+def perspective_project(point, cam, screen_z):
+    x = cam.x + ((screen_z - cam.z) * (cam.x - point.x) / (point.z - cam.z))
+    y = cam.y + ((screen_z - cam.z) * (cam.y - point.y) / (point.z - cam.z))
+    # return Point(x, y, 0)
+    return (x, y)
+
+def parallel_project(point):
+    # return Point(point.x, point.y)
+    return (point.x, point.y)
+
+def main(args):
+    cam = Point(args.cam_x, args.cam_y, args.cam_z)
+    vector = UnitVector(args.VECTOR_X, args.VECTOR_Y, args.VECTOR_Z)
+
+    # Define a cube
+    cube = []
+    CUBE_SIDE = 200
+    face = [Point(*_) for _ in (
+        (0, 0, 0),
+        (0, CUBE_SIDE, 0),
+        (0, CUBE_SIDE, CUBE_SIDE),
+        (0, 0, CUBE_SIDE))]
+    cube.append(face)
+    cube.append(list(translate(face, CUBE_SIDE, 0, 0)))
+    face = [Point(*_) for _ in (
+        (0, 0, 0),
+        (CUBE_SIDE, 0, 0),
+        (CUBE_SIDE, CUBE_SIDE, 0),
+        (0, CUBE_SIDE, 0))]
+    cube.append(face)
+    cube.append(list(translate(face, 0, 0, CUBE_SIDE)))
+    face = [Point(*_) for _ in (
+        (0, 0, 0),
+        (0, 0, CUBE_SIDE),
+        (CUBE_SIDE, 0, CUBE_SIDE),
+        (0, 0, CUBE_SIDE))]
+    cube.append(face)
+    cube.append(list(translate(face, 0, CUBE_SIDE, 0)))
+    # Shift it so that cube is centered at the origin
+    cube = [list(translate(
+        face,
+        -CUBE_SIDE // 2,
+        -CUBE_SIDE // 2,
+        -CUBE_SIDE // 2)) for face in cube]
+
+    # Init display
+    pygame.display.init()
+    screen = pygame.display.set_mode((args.window_size, args.window_size))
+    surface = pygame.display.get_surface()
+
+    for cube in animate(cube, vector, range(args.angle + 1)):
+        # Shift it at the center of the screen
+        cube = [list(translate(face,
+                               args.window_size // 2,
+                               args.window_size // 2,
+                               -CUBE_SIDE * 1.5)) for face in cube]
+        perspectives = [[perspective_project(point, cam, args.screen_z)
+                         for point in face]
+                        for face in cube]
+        parallels= [[parallel_project(point) for point in face]
+                    for face in cube]
+
+        for polygon in perspectives:
+            pygame.draw.polygon(surface, (255, 255, 255), polygon, 1)
+        for polygon in parallels:
+            pygame.draw.polygon(surface, (255, 0, 255), polygon, 1)
+
+        pygame.display.update()
+        time.sleep(0.02)
+        surface.fill((0,0,0))
+
+    # Wait till window quit
+    time.sleep(2)
+    # while pygame.event.wait().type != pygame.QUIT:
+        # pass
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -112,102 +195,29 @@ if __name__ == '__main__':
     parser.add_argument("VECTOR_Z",
                         type=int,
                         help="Z dimension of axis of rotation")
-    parser.add_argument("CAM_X",
+    parser.add_argument("--cam_x",
                         type=int,
-                        help="X coordinate of camera")
-    parser.add_argument("CAM_Y",
+                        help="X coordinate of camera",
+                        default=250)
+    parser.add_argument("--cam_y",
                         type=int,
-                        help="Y coordinate of camera")
-    parser.add_argument("CAM_Z",
+                        help="Y coordinate of camera",
+                        default=250)
+    parser.add_argument("--cam_z",
                         type=int,
-                        help="Z coordinate of camera")
+                        help="Z coordinate of camera",
+                        default=300)
     parser.add_argument("--screen-z",
                         type=int,
                         help="Z coordinate of screen",
                         default=0)
-    parser.add_argument("ANGLE",
+    parser.add_argument("--angle",
                         type=int,
-                        help="Angle to rotate in degrees")
+                        help="Angle to rotate in degrees",
+                        default=360)
     parser.add_argument("--window-size", "-w",
                         type=int,
                         default=500,
                         help="Window size in pixels (equal width an height)")
     args = parser.parse_args()
-    cam = Point(args.CAM_X, args.CAM_Y, args.CAM_Z)
-
-    # Init display
-    pygame.display.init()
-    screen = pygame.display.set_mode((args.window_size, args.window_size))
-    surface = pygame.display.get_surface()
-
-    cube = []
-    CUBE_SIDE = 200
-    face = [Point(*_) for _ in (
-        (0, 0, 0),
-        (0, CUBE_SIDE, 0),
-        (0, CUBE_SIDE, CUBE_SIDE),
-        (0, 0, CUBE_SIDE))]
-    cube.append(face)
-    cube.append(list(translate(face, CUBE_SIDE, 0, 0)))
-
-    face = [Point(*_) for _ in (
-        (0, 0, 0),
-        (CUBE_SIDE, 0, 0),
-        (CUBE_SIDE, CUBE_SIDE, 0),
-        (0, CUBE_SIDE, 0))]
-    cube.append(face)
-    cube.append(list(translate(face, 0, 0, CUBE_SIDE)))
-
-    face = [Point(*_) for _ in (
-        (0, 0, 0),
-        (0, 0, CUBE_SIDE),
-        (CUBE_SIDE, 0, CUBE_SIDE),
-        (0, 0, CUBE_SIDE))]
-    cube.append(face)
-    cube.append(list(translate(face, 0, CUBE_SIDE, 0)))
-    cube = [list(translate(
-        face,
-        -CUBE_SIDE // 2,
-        -CUBE_SIDE // 2,
-        -CUBE_SIDE // 2)) for face in cube]
-
-    def animate(cube, vector, rotation_range):
-        for angle in rotation_range:
-            faces = [[point for point in face] for face in rotate_faces(cube, math.radians(angle), vector)]
-            yield list(faces)
-
-    def perspective_project(point, cam, screen_z):
-        x = cam.x + ((screen_z - cam.z) / (cam.z - point.z)) * (cam.x - point.x)
-        y = cam.y + ((screen_z - cam.z) / (cam.z - point.z)) * (cam.y - point.y)
-        x = int(round(x))
-        y = int(round(y))
-        return (x, y)
-
-    def parallel_project(point):
-        return (point.x, point.y)
-
-    vector = UnitVector(args.VECTOR_X, args.VECTOR_Y, args.VECTOR_Z)
-    for cube in animate(cube, vector, range(361)):
-        cube = [list(translate(
-            face,
-            args.window_size // 2, args.window_size // 2,
-            -CUBE_SIDE // 2)) for face in cube]
-        perspectives = [[perspective_project(point, cam, args.screen_z)
-                        for point in face]
-                       for face in cube]
-        parallels= [[parallel_project(point)
-                        for point in face]
-                       for face in cube]
-
-        for polygon in perspectives:
-            pygame.draw.polygon(surface, (255, 255, 255), polygon, 1)
-        for polygon in parallels:
-            pygame.draw.polygon(surface, (255, 0, 255), polygon, 1)
-
-        pygame.display.update()
-        time.sleep(0.02)
-        surface.fill((0,0,0))
-
-    # Wait till window quit
-    while pygame.event.wait().type != pygame.QUIT:
-        pass
+    main(args)
