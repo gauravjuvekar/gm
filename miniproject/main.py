@@ -4,10 +4,15 @@ import cv2
 
 eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+hand_cascade = cv2.CascadeClassifier('hand2.xml')
 
 def detect(img, cascade):
-    rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30, 30),
-                                     flags=cv2.CASCADE_SCALE_IMAGE)
+    rects = cascade.detectMultiScale(
+            img,
+            scaleFactor=2,
+            minNeighbors=1,
+            minSize=(10, 10),
+            flags=cv2.CASCADE_SCALE_IMAGE)
     if len(rects) == 0:
         return []
     rects[:,2:] += rects[:,:2]
@@ -29,11 +34,11 @@ if __name__ == '__main__':
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray = cv2.equalizeHist(gray)
 
-        rects = detect(gray, face_cascade)
+        rects = detect(gray, hand_cascade)
         vis = img.copy()
-        draw_rects(gray, rects, (0, 255, 0))
+        draw_rects(vis, rects, (0, 255, 0))
 
-        cv2.imshow('facedetect', gray)
+        cv2.imshow('facedetect', vis)
 
         key = cv2.waitKey(1) & 0xff
         if key == ord('q'):

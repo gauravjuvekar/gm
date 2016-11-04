@@ -10,3 +10,4 @@ tags
 *.fdb
 *.fls
 Fig.*.tex
+__pycache__

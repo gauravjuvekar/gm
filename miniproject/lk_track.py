@@ -34,7 +34,7 @@ class App(object):
             ret, frame = self.cam.read()
             frame = cv2.flip(frame, 1)
             fgmask = self.fgbg.apply(frame)
-            cv2.imshow("fgmask", fgmask)
+            # cv2.imshow("fgmask", fgmask)
             frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             vis = frame_gray.copy()
 

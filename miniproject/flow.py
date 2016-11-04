@@ -1,80 +1,93 @@
 #!/usr/bin/env python3
+
+'''
+example to show optical flow
+
+USAGE: opt_flow.py [<video_source>]
+
+Keys:
+ 1 - toggle HSV flow visualization
+ 2 - toggle glitch
+
+Keys:
+    ESC    - exit
+'''
+
+# Python 2/3 compatibility
 import numpy as np
 import cv2
 
-cap = cv2.VideoCapture(0)
 
-# Parameters for lucas kanade optical flow
-lk_params = dict(winSize  = (15,15),
-                 maxLevel = 2,
-                 criteria = (cv2.TERM_CRITERIA_EPS |
-                             cv2.TERM_CRITERIA_COUNT,
-                             10, 0.03))
-
-# Create some random colors
-color = np.random.randint(0,255,(100,3))
-
-# Take first frame and find corners in it
-ret, old_frame = cap.read()
-old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
-track_points = cv2.goodFeaturesToTrack(
-    old_gray, 4, qualityLevel=0.3, minDistance=7)
-
-# Create a mask image for drawing purposes
-mask = np.zeros_like(old_frame)
-
-sel_rect_last_down = None
-def init_click_cb(event, x, y, flags, param):
-    global track_points
-    global sel_rect_last_down
-    if event == cv2.EVENT_LBUTTONDOWN:
-        sel_rect_last_down = (x, y)
-    if event == cv2.EVENT_LBUTTONUP:
-        track_points.append((x, y))
+def draw_flow(img, flow, step=16):
+    h, w = img.shape[:2]
+    y, x = np.mgrid[step/2:h:step, step/2:w:step].reshape(2,-1).astype(int)
+    fx, fy = flow[y,x].T
+    lines = np.vstack([x, y, x+fx, y+fy]).T.reshape(-1, 2, 2)
+    lines = np.int32(lines + 0.5)
+    vis = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    cv2.polylines(vis, lines, 0, (0, 255, 0))
+    for (x1, y1), (x2, y2) in lines:
+        cv2.circle(vis, (x1, y1), 1, (0, 255, 0), -1)
+    return vis
 
 
-while(1):
-    ret,frame = cap.read()
-    frame = cv2.flip(frame, 1)
-    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    if len(track_points):
-        # calculate optical flow
-        # prev_points = np.array([[list(point)] for point in track_points])
-        prev_points = np.int0(track_points)
-        # print(prev_points.flags, prev_points.strides, prev_points.ndim)
-        # print(prev_points)
-        new_points, st, err = cv2.calcOpticalFlowPyrLK(
-            old_gray,
-            frame_gray,
-            prev_points,
-            None,
-            **lk_params)
-
-        # Select good points
-        good_new = new_points[st==1]
-        good_old = track_points[st==1]
-
-        # draw the tracks
-        for i, (new, old) in enumerate(zip(good_new, good_old)):
-            a, b = new.ravel()
-            c, d = old.ravel()
-            mask = cv2.line(mask, (a, b), (c, d), color[i].tolist(), 2)
-            frame = cv2.circle(frame, (a, b), 5, color[i].tolist(), -1)
-        img = cv2.add(frame,mask)
-
-        # Now update the previous frame and previous points
-        old_gray = frame_gray.copy()
-        track_points = good_new.reshape(-1, 1, 2)
+def draw_hsv(flow):
+    h, w = flow.shape[:2]
+    fx, fy = flow[:,:,0], flow[:,:,1]
+    ang = np.arctan2(fy, fx) + np.pi
+    v = np.sqrt(fx*fx+fy*fy)
+    hsv = np.zeros((h, w, 3), np.uint8)
+    hsv[...,0] = ang*(180/np.pi/2)
+    hsv[...,1] = 255
+    hsv[...,2] = np.minimum(v*4, 255)
+    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    return bgr
 
 
-    cv2.imshow('frame', img)
+def warp_flow(img, flow):
+    h, w = flow.shape[:2]
+    flow = -flow
+    flow[:,:,0] += np.arange(w)
+    flow[:,:,1] += np.arange(h)[:,np.newaxis]
+    res = cv2.remap(img, flow, None, cv2.INTER_LINEAR)
+    return res
 
-    key = cv2.waitKey(1) & 0xff
-    if key == ord('q'):
-        break
-    elif key == ord('r'):
-        del armature_rects[:]
+if __name__ == '__main__':
+    import sys
+    try:
+        fn = sys.argv[1]
+    except IndexError:
+        fn = 0
 
-cv2.destroyAllWindows()
-cap.release()
+    cam = cv2.VideoCapture(fn)
+    ret, prev = cam.read()
+    prevgray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
+    show_hsv = False
+    show_glitch = False
+    cur_glitch = prev.copy()
+
+    while True:
+        ret, img = cam.read()
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        flow = cv2.calcOpticalFlowFarneback(prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+        prevgray = gray
+
+        cv2.imshow('flow', draw_flow(gray, flow))
+        if show_hsv:
+            cv2.imshow('flow HSV', draw_hsv(flow))
+        if show_glitch:
+            cur_glitch = warp_flow(cur_glitch, flow)
+            cv2.imshow('glitch', cur_glitch)
+
+        ch = 0xFF & cv2.waitKey(5)
+        if ch == 27:
+            break
+        if ch == ord('1'):
+            show_hsv = not show_hsv
+            print('HSV flow visualization is', ['off', 'on'][show_hsv])
+        if ch == ord('2'):
+            show_glitch = not show_glitch
+            if show_glitch:
+                cur_glitch = img.copy()
+            print('glitch is', ['off', 'on'][show_glitch])
+    cv2.destroyAllWindows()
