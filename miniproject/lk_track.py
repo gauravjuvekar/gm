@@ -3,13 +3,12 @@ import numpy as np
 import cv2
 from time import clock
 
-lk_params = dict(winSize  = (15, 15),
-                 maxLevel = 32,
+lk_params = dict(winSize  = (10, 10),
+                 maxLevel = 2,
                  criteria = (cv2.TERM_CRITERIA_EPS |
                              cv2.TERM_CRITERIA_COUNT,
                              10, 0.03))
-spread_grow_distance = 6
-
+spread_grow_distance = 2
 
 class App(object):
     def __init__(self, video_src):
@@ -19,6 +18,8 @@ class App(object):
         self.unadded_tracks = []
         self.cam = cv2.VideoCapture(video_src)
         self.frame_idx = 0
+
+        self.fgbg = cv2.createBackgroundSubtractorMOG2()
 
         def add_points_cb(event, x, y, flags, param):
             if event == cv2.EVENT_LBUTTONUP:
@@ -32,6 +33,8 @@ class App(object):
         while True:
             ret, frame = self.cam.read()
             frame = cv2.flip(frame, 1)
+            fgmask = self.fgbg.apply(frame)
+            cv2.imshow("fgmask", fgmask)
             frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
             vis = frame_gray.copy()
 
@@ -48,6 +51,7 @@ class App(object):
                 new_tracks = []
                 for tr, (x, y), good_flag in zip(self.tracks,
                                                  p1.reshape(-1, 2), good):
+                    print(x, y)
                     if not good_flag:
                         self.unadded_tracks.append((x + spread_grow_distance,
                                                     y + spread_grow_distance))

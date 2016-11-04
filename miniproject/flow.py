@@ -76,4 +76,5 @@ while(1):
     elif key == ord('r'):
         del armature_rects[:]
 
-cv2.destroyAllWindows() cap.release()
+cv2.destroyAllWindows()
+cap.release()
