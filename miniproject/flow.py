@@ -19,6 +19,22 @@ import cv2
 
 from collections import deque
 
+from itertools import islice
+
+
+def window(seq, n=2):
+    """
+    Returns a sliding window (of width n) over data from the iterable
+    s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ...
+    """
+    it = iter(seq)
+    result = tuple(islice(it, n))
+    if len(result) == n:
+        yield result
+    for elem in it:
+        result = result[1:] + (elem,)
+        yield result
+
 
 def draw_flow(img, flow, step=16):
     h, w = img.shape[:2]
@@ -55,14 +71,10 @@ def warp_flow(img, flow):
     return res
 
 
-def filter_reduce_flow(flow, thresh=10):
+def filter_reduce_flow(flow):
     h, w = flow.shape[:2]
     fx, fy = flow[:,:,0], flow[:,:,1]
-    fx = fx.reshape(h*w, 1)
-    fy = fy.reshape(h*w, 1)
-    fx[abs(fx) < thresh] = 0
-    fy[abs(fy) < thresh] = 0
-    return [fx.sum(), fy.sum()]
+    return [fx.mean(), fy.mean()]
 
 
 if __name__ == '__main__':
@@ -80,10 +92,12 @@ if __name__ == '__main__':
     show_glitch = False
     cur_glitch = prev.copy()
 
-    win_x, win_y = 640, 480
+    threshold = 0.8
+    history = deque(maxlen=10)
 
     while True:
         ret, img = cam.read()
+        win_x, win_y = img.shape[:2]
         img = cv2.flip(img, 1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         flow = cv2.calcOpticalFlowFarneback(
@@ -101,7 +115,7 @@ if __name__ == '__main__':
 
         aggregate = filter_reduce_flow(flow)
         x, y = aggregate
-        if x == 0 and y == 0:
+        if abs(x) < threshold and abs(y) < threshold:
             direction = None
         else:
             direction = np.arctan2(y, x)
@@ -115,10 +129,22 @@ if __name__ == '__main__':
                     (win_x//2, win_y//2),
                     (win_x//2 + lx, win_y//2 + ly),
                     (0, 255, 255))
+            direction = int((np.degrees(direction) + 360 + 90) % 360)
+            # dir_step = [0, 45, 135, 225, 315, 360]
+            # dir_geo = ["N", "E", "S", "W", "N"]
+            dir_step = [0, 180, 360]
+            dir_geo = ["R", "L", "R"]
+            for i, (l, h) in enumerate(window(dir_step, 2)):
+                if l<= direction < h:
+                    direction = dir_geo[i]
+                    break
+
+        history.append(direction)
+        print(direction)
         cv2.imshow("img", img)
 
 
-        cv2.imshow('flow', draw_flow(gray, flow))
+        # cv2.imshow('flow', draw_flow(gray, flow))
         if show_hsv:
             cv2.imshow('flow HSV', draw_hsv(flow))
         if show_glitch:
