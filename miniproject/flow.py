@@ -61,6 +61,7 @@ if __name__ == '__main__':
 
     cam = cv2.VideoCapture(fn)
     ret, prev = cam.read()
+    prev = cv2.flip(prev, 1)
     prevgray = cv2.cvtColor(prev, cv2.COLOR_BGR2GRAY)
     show_hsv = False
     show_glitch = False
@@ -68,6 +69,7 @@ if __name__ == '__main__':
 
     while True:
         ret, img = cam.read()
+        img = cv2.flip(img, 1)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         flow = cv2.calcOpticalFlowFarneback(
                 prevgray,
