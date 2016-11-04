@@ -17,6 +17,8 @@ Keys:
 import numpy as np
 import cv2
 
+from collections import deque
+
 
 def draw_flow(img, flow, step=16):
     h, w = img.shape[:2]
@@ -52,6 +54,17 @@ def warp_flow(img, flow):
     res = cv2.remap(img, flow, None, cv2.INTER_LINEAR)
     return res
 
+
+def filter_reduce_flow(flow, thresh=10):
+    h, w = flow.shape[:2]
+    fx, fy = flow[:,:,0], flow[:,:,1]
+    fx = fx.reshape(h*w, 1)
+    fy = fy.reshape(h*w, 1)
+    fx[abs(fx) < thresh] = 0
+    fy[abs(fy) < thresh] = 0
+    return [fx.sum(), fy.sum()]
+
+
 if __name__ == '__main__':
     import sys
     try:
@@ -67,6 +80,8 @@ if __name__ == '__main__':
     show_glitch = False
     cur_glitch = prev.copy()
 
+    win_x, win_y = 640, 480
+
     while True:
         ret, img = cam.read()
         img = cv2.flip(img, 1)
@@ -75,8 +90,33 @@ if __name__ == '__main__':
                 prevgray,
                 gray,
                 None,
-                0.5, 3, 15, 3, 5, 1.2, 0)
+                0.5,
+                3,
+                15,
+                3,
+                5,
+                1.2,
+                0)
         prevgray = gray
+
+        aggregate = filter_reduce_flow(flow)
+        x, y = aggregate
+        if x == 0 and y == 0:
+            direction = None
+        else:
+            direction = np.arctan2(y, x)
+            r = 100
+            lx = r * np.cos(direction)
+            lx = int(lx)
+            ly = r * np.sin(direction)
+            ly = int(ly)
+            cv2.line(
+                    img,
+                    (win_x//2, win_y//2),
+                    (win_x//2 + lx, win_y//2 + ly),
+                    (0, 255, 255))
+        cv2.imshow("img", img)
+
 
         cv2.imshow('flow', draw_flow(gray, flow))
         if show_hsv:
