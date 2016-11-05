@@ -77,6 +77,10 @@ def filter_reduce_flow(flow):
     return [fx.mean(), fy.mean()]
 
 
+def event_cb(event):
+    print(event)
+
+
 if __name__ == '__main__':
     import sys
     try:
@@ -93,7 +97,8 @@ if __name__ == '__main__':
     cur_glitch = prev.copy()
 
     threshold = 0.8
-    history = deque(maxlen=10)
+    history = deque(maxlen=4)
+    last_exec = None
 
     while True:
         ret, img = cam.read()
@@ -140,7 +145,17 @@ if __name__ == '__main__':
                     break
 
         history.append(direction)
-        print(direction)
+        s_history = set(history)
+        if 1 <= len(s_history) <= 2:
+            s_history -= set([None])
+            if len(s_history):
+                event = s_history.pop()
+                if last_exec is None:
+                    event_cb(event)
+            else:
+                event = None
+            last_exec = event
+
         cv2.imshow("img", img)
 
 
