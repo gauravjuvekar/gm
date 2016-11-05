@@ -1,25 +1,11 @@
 #!/usr/bin/env python3
-
-'''
-example to show optical flow
-
-USAGE: opt_flow.py [<video_source>]
-
-Keys:
- 1 - toggle HSV flow visualization
- 2 - toggle glitch
-
-Keys:
-    ESC    - exit
-'''
-
-# Python 2/3 compatibility
 import numpy as np
 import cv2
 
 from collections import deque
-
 from itertools import islice
+
+import target_ctrl
 
 
 def window(seq, n=2):
@@ -34,6 +20,14 @@ def window(seq, n=2):
     for elem in it:
         result = result[1:] + (elem,)
         yield result
+
+wspace_manager = target_ctrl.WinManager()
+
+def event_cb(event):
+    if event == 'L':
+        wspace_manager.switch_prev()
+    elif event == 'R':
+        wspace_manager.switch_next()
 
 
 def draw_flow(img, flow, step=16):
@@ -76,9 +70,6 @@ def filter_reduce_flow(flow):
     fx, fy = flow[:,:,0], flow[:,:,1]
     return [fx.mean(), fy.mean()]
 
-
-def event_cb(event):
-    print(event)
 
 
 if __name__ == '__main__':
