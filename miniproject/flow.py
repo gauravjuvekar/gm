@@ -126,10 +126,10 @@ if __name__ == '__main__':
                     (win_x//2 + lx, win_y//2 + ly),
                     (0, 255, 255))
             direction = int((np.degrees(direction) + 360 + 90) % 360)
-            # dir_step = [0, 45, 135, 225, 315, 360]
-            # dir_geo = ["N", "E", "S", "W", "N"]
-            dir_step = [0, 180, 360]
-            dir_geo = ["R", "L", "R"]
+            dir_step = [0, 45, 135, 225, 315, 360]
+            dir_geo = ["U", "R", "D", "L", "U"]
+            # dir_step = [0, 180, 360]
+            # dir_geo = ["R", "L", "R"]
             for i, (l, h) in enumerate(window(dir_step, 2)):
                 if l<= direction < h:
                     direction = dir_geo[i]
