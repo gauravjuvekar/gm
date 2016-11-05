@@ -88,7 +88,7 @@ if __name__ == '__main__':
     cur_glitch = prev.copy()
 
     threshold = 0.8
-    history = deque(maxlen=4)
+    history = deque(maxlen=5)
     last_exec = None
 
     while True:
