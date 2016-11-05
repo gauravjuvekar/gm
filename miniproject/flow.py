@@ -109,6 +109,7 @@ if __name__ == '__main__':
                 0)
         prevgray = gray
 
+        # Average motion and group it into a direction
         aggregate = filter_reduce_flow(flow)
         x, y = aggregate
         if abs(x) < threshold and abs(y) < threshold:
@@ -135,6 +136,7 @@ if __name__ == '__main__':
                     direction = dir_geo[i]
                     break
 
+        # Filter from history to reject unwanted or rapid movements
         history.append(direction)
         s_history = set(history)
         if 1 <= len(s_history) <= 2:
